@@ -216,36 +216,11 @@ namespace Networking
 
         bool Server::isClosedConnection(const Socket& socket)
         {
-            if (serverParams.get() != nullptr)
-            {
-                std::uint16_t connectionID = 0;
-                if (getConnectionIDBySocket(socket, connectionID) == true)
-                {
-                    std::unique_ptr<fd_set> rfd(new fd_set);
-
-                    FD_ZERO(rfd.get());
-                    FD_SET(socket.get(), rfd.get());
-
-                    std::unique_ptr<timeval> tv(new timeval{ 0 });
-
-                    select(socket.get() + 1, rfd.get(), 0, 0, tv.get());
-                    if (!FD_ISSET(socket.get(), rfd.get())) { return false; }
-
-                    int isClosed = 0;
-                    ioctl(socket.get(), FIONREAD, &isClosed);
-
-                    return (isClosed == 0);
-                }
-            }
-
-            return true;
-
-
-            /*int error = 0;
+            int error = 0;
             socklen_t len = sizeof(error);
             errorCheck(getsockopt(socket.get(), SOL_SOCKET, SO_ERROR, &error, &len), "Server error (Getting socket options failed)");
 
-            return !(error == 0);*/
+            return !(error == 0);
         }
 
 
